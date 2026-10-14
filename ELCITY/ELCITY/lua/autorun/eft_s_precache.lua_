@@ -1,0 +1,24 @@
+--[[
+    > File stolen by <
+     __   ___      __  __                  ___ ___                ___  __   __   __               ___
+    |__) |__  |\ |  / /  \ \ / |     |\/| |__   |  |__| \ / |    |__  /  ` / _` /  \ |\ | | |\ | |__
+    |__) |___ | \| /_ \__/  |  |___  |  | |___  |  |  |  |  |___ |___ \__, \__> \__/ | \| | | \| |___
+
+    > Server: ZAMES RU SERVER #1 Homicide | Быстрая загрузка (5.42.211.79:24215) <
+    > File: lua/autorun/eft_s_precache.lua <
+    > Callstack:  <
+]]
+
+if ( SERVER ) then 
+
+	game.AddParticles("particles/hs_impact_fx.pcf")
+	PrecacheParticleSystem("impact_helmet_headshot_csgo")
+	
+end
+
+if ( CLIENT ) then 
+
+	game.AddParticles("particles/hs_impact_fx.pcf")
+	PrecacheParticleSystem("impact_helmet_headshot_csgo")
+	
+end

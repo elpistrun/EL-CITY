@@ -1,0 +1,43 @@
+--[[
+    > File stolen by <
+     __   ___      __  __                  ___ ___                ___  __   __   __               ___
+    |__) |__  |\ |  / /  \ \ / |     |\/| |__   |  |__| \ / |    |__  /  ` / _` /  \ |\ | | |\ | |__
+    |__) |___ | \| /_ \__/  |  |___  |  | |___  |  |  |  |  |___ |___ \__, \__> \__/ | \| | | \| |___
+
+    > Server: ZAMES RU SERVER #1 Homicide | Быстрая загрузка (5.42.211.79:24215) <
+    > File: lua/vgui/dmodelselectmulti.lua <
+    > Callstack:  <
+]]
+
+
+local PANEL = {}
+
+function PANEL:Init()
+
+	self.ModelPanels = {}
+	self:SetHeight( 2 )
+
+end
+
+function PANEL:SetHeight( numHeight )
+
+	self:SetTall( 66 * ( numHeight or 2 ) + 26 )
+
+end
+
+function PANEL:AddModelList( name, modelList, conVar, dontSort, dontCallListConVars )
+
+	local ModelSelect = vgui.Create( "DModelSelect", self )
+
+	ModelSelect:SetModelList( modelList, conVar, dontSort, dontCallListConVars )
+
+	self:AddSheet( name, ModelSelect )
+
+	self.ModelPanels[ name ] = ModelSelect
+
+	return ModelSelect
+
+end
+
+derma.DefineControl( "DModelSelectMulti", "", PANEL, "DPropertySheet" )
+

@@ -1,0 +1,110 @@
+--[[
+    > File stolen by <
+     __   ___      __  __                  ___ ___                ___  __   __   __               ___
+    |__) |__  |\ |  / /  \ \ / |     |\/| |__   |  |__| \ / |    |__  /  ` / _` /  \ |\ | | |\ | |__
+    |__) |___ | \| /_ \__/  |  |___  |  | |___  |  |  |  |  |___ |___ \__, \__> \__/ | \| | | \| |___
+
+    > Server: ZAMES RU SERVER #1 Homicide | Быстрая загрузка (5.42.211.79:24215) <
+    > File: lua/mappatcher/tools/tp_target.lua <
+    > Callstack: lua/mappatcher/shared.lua:43
+lua/mappatcher/shared.lua:65
+[C]:-1
+lua/autorun/mappatcher.lua:86 <
+]]
+
+local TOOL = TOOL
+--------------------------------------------------------------------------------
+TOOL.Base = "base_point"
+TOOL.Description = "Teleport target used by teleport brush. You can find more detail by reading description by selecting teleport brush. The teleport target will be oriented to the same direction as editor camera."
+TOOL.VisibleInMenu = true
+TOOL.MenuPriority = 12000
+--------------------------------------------------------------------------------
+TOOL.TextureColor = Color(255,100,0,150)
+TOOL.TextureText = "#mappatcher.tools.tp_target.title"
+--------------------------------------------------------------------------------
+function TOOL:PreviewPaint( panel, w, h )
+    local x, y = panel:LocalToScreen( 0, 0 )
+    cam.Start3D(Vector(-35,-35,74), Angle(35,45,0), 90, x, y, w, h)
+        render.Model( {
+            model = "models/editor/playerstart.mdl",
+            pos = self.point,
+            angle = Angle(0,RealTime()*40,0),
+        } )
+
+        render.SetColorMaterial()
+        render.DrawBox( Vector(), Angle(0,RealTime()*40,0), Vector(-16.5,-16.5,0), Vector(16.5,16.5,73), self.TextureColor, true )
+        render.DrawWireframeBox( Vector(), Angle(0,RealTime()*40,0), Vector(-16.5,-16.5,0), Vector(16.5,16.5,73), Color(255,255,255), true )
+    cam.End3D()
+end
+
+function TOOL:ObjectCreated()
+    self.point = nil
+    self.ang = nil
+    self.name = ""
+end
+
+function TOOL:LeftClick( pos, ang )
+    self.point = pos
+    self.ang = ang.y
+end
+
+function TOOL:EditorRender( selected )
+    render.Model( {
+        model = "models/editor/playerstart.mdl",
+        pos = self.point,
+        angle = Angle(0, self.ang, 0),
+    } )
+    
+    render.SetColorMaterial()
+    render.DrawBox( self.point, Angle(), Vector(-16.5,-16.5,0), Vector(16.5,16.5,73), self.TextureColor, true )
+
+    if selected then
+        render.DrawWireframeBox( self.point, Angle(), Vector(-16.5,-16.5,0), Vector(16.5,16.5,73), Color(255,255,255), false )
+    else
+        render.DrawWireframeBox( self.point, Angle(), Vector(-16.5,-16.5,0), Vector(16.5,16.5,73), Color(255,255,255,20), false )
+    end
+end
+
+function TOOL:SetupObjectPanel( panel )
+    local DLabel = vgui.Create( "DLabel", panel )
+    DLabel:SetTextColor( Color( 255, 255, 255, 255 ) )
+    DLabel:SetPos( 10, 10 )
+    DLabel:SetText( "#mappatcher.tools.tp_target.settings.name" )
+
+    local TextEntry = vgui.Create( "DTextEntry", panel ) -- create the form as a child of frame
+    TextEntry:SetPos( 50, 10 )
+    TextEntry:SetSize( 100, 20 )
+    TextEntry:SetText( self.name )
+    TextEntry.OnChange = function( text_entry )
+        self.name = text_entry:GetValue()
+    end
+end
+
+function TOOL:GetOrigin( )
+    return self.point
+end
+
+function TOOL:IsValid( )
+    return self.point ~= nil
+end
+
+function TOOL:ToString( )
+    if getmetatable(self) == self then
+        return "[class] " .. self.ClassName
+    end
+    return "["..self.ID.."] "..self.ClassName.." \""..self.name.."\""
+end
+
+--------------------------------------------------------------------------------
+function TOOL:WriteToBuffer( buffer )
+    buffer:WriteVector( self.point or Vector() )
+    buffer:WriteUInt16( self.ang or 0 )
+    buffer:WriteString( self.name )
+end
+
+function TOOL:ReadFromBuffer( buffer, len )
+    self.point = buffer:ReadVector( )
+    self.ang = buffer:ReadUInt16()
+    self.name = buffer:ReadString()
+end
+
